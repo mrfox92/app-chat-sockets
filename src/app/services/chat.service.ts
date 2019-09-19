@@ -8,12 +8,12 @@ export class ChatService {
 
   constructor( public webSocketService: WebsocketService ) { }
 
-  //  cuando un usuario llame el servicio de chat, habra un metodo diseñado especificamente para enviar mensajes
+  //  cuando un usuario llame el servicio de chat, habra un metodo disenado especificamente para enviar mensajes
 
   sendMessage( mensaje: string ) {
 
     const payload = {
-      de: 'David',
+      de: this.webSocketService.getUsuario().nombre,
       cuerpo: mensaje
     };
 
@@ -22,7 +22,11 @@ export class ChatService {
   }
 
   getMessages() {
-    return this.webSocketService.listen('mensaje-nuevo');
+    return this.webSocketService.listen( 'mensaje-nuevo' );
+  }
+
+  getMessagesPrivate() {
+    return this.webSocketService.listen( 'mensaje-privado' );
   }
 
 }

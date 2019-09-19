@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
+import { Usuario } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +8,11 @@ import { Socket } from 'ngx-socket-io';
 export class WebsocketService {
 
   public socketStatus = false;
+  public usuario: Usuario = null;
 
   constructor( private socket: Socket ) {
 
+    this.cargarStorage();
     this.checkStatus();
   }
 
@@ -33,6 +36,7 @@ export class WebsocketService {
   }
 
 
+  //  mediante este evento emitimos eventos y tenemos una funcion más centralizada a la hora de trabajar
   // tslint:disable-next-line: ban-types
   emit( evento: string, payload?: any, callback?: Function ) {
 
@@ -41,8 +45,48 @@ export class WebsocketService {
   }
 
   listen( evento: string ) {
-    //  debemos retornar un observable para podernos suscribir
+    //  Debemos retornar un observable para podernos suscribir
     return this.socket.fromEvent( evento );
+  }
+
+  loginWS( nombre: string ): Promise<any> {
+
+    return new Promise ( ( resolve, reject ) => {
+
+      //  llamamos a nuestro metodo emit
+      this.emit( 'configurar-usuario', { nombre }, resp => {
+
+        //  registramos el usuario
+        this.usuario = new Usuario( nombre );
+        //  guardamos el usuario en el storage
+        this.guardarStorage();
+        resolve();
+
+      });
+
+    });
+
+  }
+
+  getUsuario() {
+    return this.usuario;
+  }
+
+  guardarStorage() {
+
+    localStorage.setItem( 'usuario', JSON.stringify( this.usuario ) );
+  }
+
+  cargarStorage() {
+
+    //  verificamos que exista la entrada en el storage
+    if ( localStorage.getItem('usuario') ) {
+      //  cargamos el usuario
+      this.usuario = JSON.parse( localStorage.getItem('usuario') );
+      //  llamamos a nuestro metodo para autenticar a nuestro usuario
+      this.loginWS( this.usuario.nombre );
+    }
+
   }
 
 }

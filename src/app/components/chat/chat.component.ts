@@ -18,11 +18,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.elemento = document.getElementById('chat-mensajes');
-    //  nos suscribimos lo que retorne el servicio que esta en escucha por nuevos mensajes
+    //  nos suscribimos a lo que retorne el servicio que esta en escucha por nuevos mensajes
     this.mensajesSubscription = this.chatService.getMessages().subscribe( message => {
 
       this.mensajes.push( message );
 
+      //  mantener el scroll siempre en el ultimo mensaje emitido
       setTimeout( () => {
 
         this.elemento.scrollTop = this.elemento.scrollHeight;
