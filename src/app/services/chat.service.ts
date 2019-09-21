@@ -29,4 +29,12 @@ export class ChatService {
     return this.webSocketService.listen( 'mensaje-privado' );
   }
 
+  getUsuariosActivos() {
+    return this.webSocketService.listen( 'usuarios-activos' );
+  }
+
+  emitirUsuariosActivos() {
+    this.webSocketService.emit( 'obtener-usuarios' );
+  }
+
 }
